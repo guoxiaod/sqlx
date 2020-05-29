@@ -12,7 +12,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/jmoiron/sqlx/reflectx"
+	"github.com/cookieY/sqlx/reflectx"
 )
 
 // Although the NameMapper is convenient, in practice it should not
@@ -844,11 +844,30 @@ func MapScan(r ColScanner, dest map[string]interface{}) error {
 		return err
 	}
 
-	for i, column := range columns {
+	ele := removeDuplicateElement(columns)
+
+	for i, column := range ele {
 		dest[column] = *(values[i].(*interface{}))
 	}
 
 	return r.Err()
+}
+
+func removeDuplicateElement(addrs []string) []string {
+	result := make([]string, 0, len(addrs))
+	temp := map[string]struct{}{}
+	idx := 0
+	for _, item := range addrs {
+		if _, ok := temp[item]; !ok {
+			temp[item] = struct{}{}
+			result = append(result, item)
+		} else {
+			idx++
+			item += fmt.Sprintf("(%v)", idx)
+			result = append(result, item)
+		}
+	}
+	return result
 }
 
 type rowsi interface {

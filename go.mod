@@ -1,4 +1,4 @@
-module github.com/cookieY/sqlx
+module github.com/guoxiaod/sqlx
 
 go 1.14
 
